@@ -3,6 +3,7 @@
 #
 #   Copyright (c) 2008-2011 Tobias Hieta <tobias@hieta.se>
 #   Copyright (c) 2014      Rossen Apostolov <rossen@mochiron.org>
+#   Copyright (c) 2015      Thomas Löffler <loeffler@spooner-web.de>
 #
 
 # This is a simple Gerrit hook for updating Redmine with information about what changes
@@ -72,6 +73,10 @@ if __name__ == '__main__':
     if not commitmsg or len(commitmsg) < 10:
         print("no commit msg!")
         sys.exit(0)
+		
+# git show -s --format=%s  e690993e20440a1e7307748527077bdd86e6d574
+    subject = check_output(['git','show','-s','--format=%s', options.commit])
+
 # update status only for the first patchset
     if int(options.patchset) != 1:
         print("This is not the first patchset ({}) for this issue ({}), will not update the status".format(options.patchset, options.changeurl))
@@ -90,10 +95,11 @@ if __name__ == '__main__':
            sys.exit(0)
 
        redminecomment = "Gerrit received a related patchset "
-       redminecomment += "'{}' for Issue #{}.\n".format(options.patchset, redmineid)
+       redminecomment += "for Issue #{} on project '{}' branch '{}'.\n".format(redmineid, options.project, options.branch)
        redminecomment += "Uploader: {}\n".format(options.uploader)
        redminecomment += "Change-Id: {}\n".format(options.changeid)
        redminecomment += "Gerrit URL: {}\n".format(options.changeurl)
+       redminecomment += "Subject: {}\n".format(subject)
 
        jsonstruct = {"issue":{}}
        jsonstruct["issue"]["notes"] = redminecomment
