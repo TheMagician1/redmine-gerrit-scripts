@@ -31,6 +31,9 @@ REDMINE_HOST_PORT_NUMBER = 80
 # Set this to true if the redmine host is using a secure connection (SSL)
 REDMINE_HOST_USING_SSL = False
 
+# Set this to the url to refer back to the issue
+GERRIT_HOST_URL = "https://gerrit.mydomain.com/c/"
+
 # if you want the script to update the status of the issue in redmine
 # you'll need to set this to the id number of that status. otherwise set
 # it to None and it won't update the status
@@ -75,7 +78,7 @@ if __name__ == '__main__':
         sys.exit(0)
 		
 # git show -s --format=%s  e690993e20440a1e7307748527077bdd86e6d574
-    subject = check_output(['git','show','-s','--format=%s', options.commit])
+    subject = check_output(['git','show','-s','--format=%s', options.commit]).decode("utf-8").strip()
 
 # update status only for the first patchset
     if int(options.patchset) != 1:
@@ -95,11 +98,11 @@ if __name__ == '__main__':
            sys.exit(0)
 
        redminecomment = "Gerrit received a related patchset "
-       redminecomment += "for Issue #{} on project '{}' branch '{}'.\n".format(redmineid, options.project, options.branch)
-       redminecomment += "Uploader: {}\n".format(options.uploader)
-       redminecomment += "Change-Id: {}\n".format(options.changeid)
-       redminecomment += "Gerrit URL: {}\n".format(options.changeurl)
-       redminecomment += "Subject: {}\n".format(subject)
+       redminecomment += "for Issue #{} on project @{}@ branch @{}@.\n".format(redmineid, options.project, options.branch)
+       redminecomment += "Uploader: {}\n".format(options.uploader.strip('"'))
+       redminecomment += "Change-Id: _{}_\n".format(options.changeid)
+       redminecomment += "Gerrit URL: {}{}\n".format(GERRIT_HOST_URL, options.changeurl)
+       redminecomment += "Subject: *{}*\n".format(subject)
 
        jsonstruct = {"issue":{}}
        jsonstruct["issue"]["notes"] = redminecomment

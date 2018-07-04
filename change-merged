@@ -31,6 +31,9 @@ REDMINE_HOST_PORT_NUMBER = 80
 # Set this to true if the redmine host is using a secure connection (SSL)
 REDMINE_HOST_USING_SSL = False
 
+# Set this to the url to refer back to the issue
+GERRIT_HOST_URL = "http://gerrit.mydomain.com/c/"
+
 # if you want the script to update the status of the issue in redmine
 # you'll need to set this to the id number of that status. otherwise set
 # it to None and it won't update the status
@@ -76,7 +79,7 @@ if __name__ == '__main__':
         print("no commit msg!")
         sys.exit(0)
 # git show -s --format=%s  e690993e20440a1e7307748527077bdd86e6d574
-    subject = check_output(['git','show','-s','--format=%s', options.commit])
+    subject = check_output(['git','show','-s','--format=%s', options.commit]).decode("utf-8").strip()
 
 # Don't change the status, only put a note. Otherwise uncomment the line below.
     IN_REVIEW_STATUS = None
@@ -90,11 +93,11 @@ if __name__ == '__main__':
            print("no issue set here")
            sys.exit(0)
 
-       redminecomment = "Gerrit change for Issue #{} has been merged into '{}' of '{}'.\n".format(redmineid, options.branch, options.project)
-       redminecomment += "Submitter: {}\n".format(options.submitter)
-       redminecomment += "Change-Id: {}\n".format(options.changeid)
-       redminecomment += "Gerrit URL: {}\n".format(options.changeurl)
-       redminecomment += "Subject: {}\n".format(subject)
+       redminecomment = "Gerrit change for Issue #{} has been merged into @{}@ of @{}@.\n".format(redmineid, options.branch, options.project)
+       redminecomment += "Submitter: {}\n".format(options.submitter.strip('"'))
+       redminecomment += "Change-Id: _{}_\n".format(options.changeid)
+       redminecomment += "Gerrit URL: {}{}\n".format(GERRIT_HOST_URL, options.changeurl)
+       redminecomment += "Subject: *{}*\n".format(subject)
 
        jsonstruct = {"issue":{}}
        jsonstruct["issue"]["notes"] = redminecomment
