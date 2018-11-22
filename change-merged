@@ -96,7 +96,7 @@ if __name__ == '__main__':
        redminecomment = "Gerrit change for Issue #{} has been merged into @{}@ of @{}@.\n".format(redmineid, options.branch, options.project)
        redminecomment += "Submitter: {}\n".format(options.submitter.strip('"'))
        redminecomment += "Change-Id: _{}_\n".format(options.changeid)
-       redminecomment += "Gerrit URL: {}{}\n".format(GERRIT_HOST_URL, options.changeurl)
+       redminecomment += "Gerrit URL: {}\n".format(options.changeurl)
        redminecomment += "Subject: *{}*\n".format(subject)
 
        jsonstruct = {"issue":{}}

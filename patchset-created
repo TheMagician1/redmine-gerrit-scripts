@@ -101,7 +101,7 @@ if __name__ == '__main__':
        redminecomment += "for Issue #{} on project @{}@ branch @{}@.\n".format(redmineid, options.project, options.branch)
        redminecomment += "Uploader: {}\n".format(options.uploader.strip('"'))
        redminecomment += "Change-Id: _{}_\n".format(options.changeid)
-       redminecomment += "Gerrit URL: {}{}\n".format(GERRIT_HOST_URL, options.changeurl)
+       redminecomment += "Gerrit URL: {}\n".format(options.changeurl)
        redminecomment += "Subject: *{}*\n".format(subject)
 
        jsonstruct = {"issue":{}}
